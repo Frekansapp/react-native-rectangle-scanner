@@ -270,6 +270,7 @@ public class ImageProcessor extends Handler {
     private ArrayList<MatOfPoint> findContours(Mat src) {
 
         Mat grayImage;
+        Mat binaryImage;
         Mat cannedImage;
         Mat resizedImage;
 
