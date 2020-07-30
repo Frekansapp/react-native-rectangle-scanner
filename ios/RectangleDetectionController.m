@@ -69,7 +69,7 @@
   [super start];
 
   float detectionRefreshRate = 20;
-  CGFloat detectionRefreshRateInSec = detectionRefreshRate/100;
+  CGFloat detectionRefreshRateInSec = detectionRefreshRate/1000;
   _borderDetectTimeKeeper = [NSTimer scheduledTimerWithTimeInterval:detectionRefreshRateInSec target:self selector:@selector(enableBorderDetectFrame) userInfo:nil repeats:YES];
 }
 
