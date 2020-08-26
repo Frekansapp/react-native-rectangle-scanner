@@ -456,7 +456,6 @@ public class CameraDeviceController extends JavaCameraView implements PictureCal
 
     private void takePicture() {
         mCamera.takePicture(null, null, pCallback);
-        makeShutterSound();
     }
 
     private void onPictureFailed() {
