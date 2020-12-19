@@ -88,8 +88,11 @@ public class CameraDeviceController extends JavaCameraView implements PictureCal
         if (mCamera != null) {
             Camera.Parameters p = mCamera.getParameters();
             p.setFlashMode(enableTorch ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF);
-            mCamera.setParameters(p);
-
+            try {
+              mCamera.setParameters(p);
+            } catch (Exception e) {
+              Log.d(TAG, "Error enabling torch: " + e);
+            }
         }
 
         torchWasChanged(enableTorch);
@@ -104,7 +107,11 @@ public class CameraDeviceController extends JavaCameraView implements PictureCal
       if (mCamera != null) {
           mCamera.stopPreview();
           mCamera.setPreviewCallback(null);
-          mCamera.release();
+          try {
+            mCamera.release();
+          } catch (Exception e) {
+            Log.d(TAG, "Error releasing camera: " + e);
+          }
           mCamera = null;
           this.cameraIsSetup = false;
       }
@@ -455,13 +462,15 @@ public class CameraDeviceController extends JavaCameraView implements PictureCal
     }
 
     private void takePicture() {
-        mCamera.takePicture(null, null, pCallback);
+      mCamera.takePicture(null, null, pCallback);
     }
 
     private void onPictureFailed() {
-        Log.d(TAG, "failed to capture image");
+      Log.d(TAG, "failed to capture image");
+      if (mCamera != null) {
         mCamera.cancelAutoFocus();
-        this.safeToTakePicture = true;
+      }
+      this.safeToTakePicture = true;
     }
 
     /**
