@@ -92,7 +92,7 @@
 /*!
 After capture, the image is stored and sent to the event handler
 */
--(void)onProcessedCapturedImage:(UIImage *)croppedImage initialImage: (UIImage *) initialImage lastRectangleFeature: (CIRectangleFeature *) lastRectangleFeature {
+-(void)onProcessedCapturedImage:(UIImage *)croppedImage initialImage: (UIImage *) initialImage lastRectangleFeature: (CIRectangleFeature *) lastRectangleFeature fromBounds: (CGRect *) fromBounds {
   NSString *dir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
   NSString *storageFolder = @"RNRectangleScanner";
 
@@ -106,6 +106,13 @@ After capture, the image is stored and sent to the event handler
     [self onErrorOfImageProcessor:@{@"message": @"Failed to create the cache directory"}];
     return;
   }
+    
+    id rectangleCoordinates = lastRectangleFeature ? @{
+                             @"topLeft": @{ @"y": @(lastRectangleFeature.bottomLeft.x), @"x": @(lastRectangleFeature.bottomLeft.y)},
+                             @"topRight": @{ @"y": @(lastRectangleFeature.topLeft.x), @"x": @(lastRectangleFeature.topLeft.y)},
+                             @"bottomLeft": @{ @"y": @(lastRectangleFeature.bottomRight.x), @"x": @(lastRectangleFeature.bottomRight.y)},
+                             @"bottomRight": @{ @"y": @(lastRectangleFeature.topRight.x), @"x": @(lastRectangleFeature.topRight.y)},
+                             } : [NSNull null];
 
   NSString *croppedFilePath = [dir stringByAppendingPathComponent:[NSString stringWithFormat:@"C%i.jpeg",(int)[NSDate date].timeIntervalSince1970]];
   NSString *initialFilePath = [dir stringByAppendingPathComponent:[NSString stringWithFormat:@"O%i.jpeg",(int)[NSDate date].timeIntervalSince1970]];
@@ -113,12 +120,15 @@ After capture, the image is stored and sent to the event handler
   if (!hasCroppedImage) {
     croppedFilePath = initialFilePath;
   }
-
+    
+    NSDictionary *dimensions = @{@"height": @(fromBounds->size.width), @"width": @(fromBounds->size.height)};
 
   if (self.onPictureTaken) {
     self.onPictureTaken(@{
       @"croppedImage": croppedFilePath,
-      @"initialImage": initialFilePath
+      @"initialImage": initialFilePath,
+      @"rectangleCoordinates": rectangleCoordinates,
+      @"dimensions": dimensions
     });
   }
 
@@ -150,7 +160,9 @@ After capture, the image is stored and sent to the event handler
     if (self.onPictureProcessed) {
       self.onPictureProcessed(@{
         @"croppedImage": croppedFilePath,
-        @"initialImage": initialFilePath
+        @"initialImage": initialFilePath,
+        @"rectangleCoordinates": rectangleCoordinates,
+        @"dimensions": dimensions
       });
     }
   }

@@ -552,7 +552,7 @@ Represents the input from the camera device
 
 // MARK: Capture Image
 
--(void)handleCapturedImage:(CIImage *)capturedImage orientation: (UIImageOrientation) orientation {
+-(void)handleCapturedImage:(CIImage *)capturedImage {
 }
 
 /*!

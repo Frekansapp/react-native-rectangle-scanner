@@ -127,10 +127,6 @@
           [self rectangleWasDetected:@{
             @"detectedRectangle": rectangleCoordinates,
           }];
-        } else {
-          [self rectangleWasDetected:@{
-            @"detectedRectangle": @FALSE,
-          }];
         }
 
         CGImageRelease(cgDetectionImage);
@@ -148,7 +144,7 @@
 /*!
  After an image is captured and cropped, this method is called
  */
--(void)onProcessedCapturedImage:(UIImage *)croppedImage initialImage: (UIImage *) initialImage lastRectangleFeature: (CIRectangleFeature *) lastRectangleFeature {
+-(void)onProcessedCapturedImage:(UIImage *)croppedImage initialImage: (UIImage *) initialImage lastRectangleFeature: (CIRectangleFeature *) lastRectangleFeature fromBounds: (CGRect *) fromBounds {
 }
 
 /*!
@@ -169,7 +165,7 @@ After an image is captured, this fuction is called and handles cropping the imag
     CGImageRef capturedref = [context createCGImage:capturedImage fromRect:capturedImage.extent];
     UIImage *initialImage = [UIImage imageWithCGImage:capturedref scale: 1.0 orientation:orientation];
 
-    [self onProcessedCapturedImage:image initialImage: initialImage lastRectangleFeature: self->_borderDetectLastRectangleFeature];
+      [self onProcessedCapturedImage:image initialImage: initialImage lastRectangleFeature: self->_borderDetectLastRectangleFeature fromBounds: &(self->_borderDetectLastRectangleBounds)];
 
     CGImageRelease(croppedref);
     CGImageRelease(capturedref);
@@ -261,8 +257,8 @@ After an image is captured, this fuction is called and handles cropping the imag
   if (!rectangle) return nil;
   return @{
     @"bottomLeft": @{
-        @"y": @(rectangle.topLeft.x),
-        @"x": @(rectangle.topLeft.y)
+        @"y": @(rectangle.bottomRight.x),
+        @"x": @(rectangle.bottomRight.y)
     },
     @"bottomRight": @{
         @"y": @(rectangle.topRight.x),
@@ -273,8 +269,8 @@ After an image is captured, this fuction is called and handles cropping the imag
         @"x": @(rectangle.bottomLeft.y)
     },
     @"topRight": @{
-        @"y": @(rectangle.bottomRight.x),
-        @"x": @(rectangle.bottomRight.y)
+        @"y": @(rectangle.topLeft.x),
+        @"x": @(rectangle.topLeft.y)
     },
     @"dimensions": @{@"height": @(imageBounds.size.width), @"width": @(imageBounds.size.height)}
   };
