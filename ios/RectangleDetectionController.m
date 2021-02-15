@@ -69,7 +69,7 @@
   [super start];
 
   float detectionRefreshRate = 20;
-  CGFloat detectionRefreshRateInSec = detectionRefreshRate/100;
+  CGFloat detectionRefreshRateInSec = detectionRefreshRate/1000;
   _borderDetectTimeKeeper = [NSTimer scheduledTimerWithTimeInterval:detectionRefreshRateInSec target:self selector:@selector(enableBorderDetectFrame) userInfo:nil repeats:YES];
 }
 
@@ -116,7 +116,7 @@
         CIContext *context = [CIContext contextWithOptions:nil];
         CGImageRef cgDetectionImage = [context createCGImage:image fromRect:image.extent];
         CIImage *detectionImage = [CIImage imageWithCGImage:cgDetectionImage];
-        detectionImage = [detectionImage imageByApplyingOrientation:kCGImagePropertyOrientationLeft];
+        detectionImage = [detectionImage imageByApplyingOrientation:kCGImagePropertyOrientationUp];
 
         self->_borderDetectLastRectangleFeature = [self biggestRectangleInRectangles:[[self highAccuracyRectangleDetector] featuresInImage:detectionImage] image:detectionImage];
         self->_borderDetectLastRectangleBounds = detectionImage.extent;
@@ -261,22 +261,22 @@ After an image is captured, this fuction is called and handles cropping the imag
   if (!rectangle) return nil;
   return @{
     @"bottomLeft": @{
-        @"y": @(rectangle.topLeft.x),
-        @"x": @(rectangle.topLeft.y)
+        @"y": @(imageBounds.size.height-rectangle.topRight.y),
+        @"x": @(rectangle.topRight.x)
     },
     @"bottomRight": @{
-        @"y": @(rectangle.topRight.x),
-        @"x": @(rectangle.topRight.y)
+        @"y": @(imageBounds.size.height-rectangle.topLeft.y),
+        @"x": @(rectangle.topLeft.x)
     },
     @"topLeft": @{
-        @"y": @(rectangle.bottomLeft.x),
-        @"x": @(rectangle.bottomLeft.y)
+        @"y": @(imageBounds.size.height-rectangle.bottomRight.y),
+        @"x": @(rectangle.bottomRight.x)
     },
     @"topRight": @{
-        @"y": @(rectangle.bottomRight.x),
-        @"x": @(rectangle.bottomRight.y)
+        @"y": @(imageBounds.size.height-rectangle.bottomLeft.y),
+        @"x": @(rectangle.bottomLeft.x)
     },
-    @"dimensions": @{@"height": @(imageBounds.size.width), @"width": @(imageBounds.size.height)}
+    @"dimensions": @{@"height": @(imageBounds.size.height), @"width": @(imageBounds.size.width)}
   };
 }
 
