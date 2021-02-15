@@ -250,31 +250,31 @@ Represents the input from the camera device
  */
 - (UIImageOrientation)getOrientationForImage
 {
-//    if (_lastInterfaceOrientation == UIInterfaceOrientationPortrait) {
-//        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeLeft) return UIImageOrientationUp;
-//        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeRight) return UIImageOrientationDown;
-//        if (_lastDeviceOrientation == UIDeviceOrientationPortraitUpsideDown) return UIImageOrientationLeft;
-//    }
-//
-//    if (_lastInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
-//        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeLeft) return UIImageOrientationUp;
-//        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeRight) return UIImageOrientationDown;
-//        if (_lastDeviceOrientation == UIDeviceOrientationPortrait) return UIImageOrientationLeft;
-//    }
-//
-//    // device landscape left == interface landscape right
-//    if (_lastInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) {
-//        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeLeft) return UIImageOrientationLeft;
-//        if (_lastDeviceOrientation == UIDeviceOrientationPortrait) return UIImageOrientationUp;
-//        if (_lastDeviceOrientation == UIDeviceOrientationPortraitUpsideDown) return UIImageOrientationDown;
-//    }
-//
-//    // device landscape right == interface landscape left
-//    if (_lastInterfaceOrientation == UIInterfaceOrientationLandscapeRight) {
-//        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeRight) return UIImageOrientationLeft;
-//        if (_lastDeviceOrientation == UIDeviceOrientationPortrait) return UIImageOrientationDown;
-//        if (_lastDeviceOrientation == UIDeviceOrientationPortraitUpsideDown) return UIImageOrientationUp;
-//    }
+    if (_lastInterfaceOrientation == UIInterfaceOrientationPortrait) {
+        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeLeft) return UIImageOrientationUp;
+        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeRight) return UIImageOrientationDown;
+        if (_lastDeviceOrientation == UIDeviceOrientationPortraitUpsideDown) return UIImageOrientationLeft;
+    }
+
+    if (_lastInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
+        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeLeft) return UIImageOrientationUp;
+        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeRight) return UIImageOrientationDown;
+        if (_lastDeviceOrientation == UIDeviceOrientationPortrait) return UIImageOrientationLeft;
+    }
+
+    // device landscape left == interface landscape right
+    if (_lastInterfaceOrientation == UIInterfaceOrientationLandscapeLeft) {
+        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeLeft) return UIImageOrientationLeft;
+        if (_lastDeviceOrientation == UIDeviceOrientationPortrait) return UIImageOrientationUp;
+        if (_lastDeviceOrientation == UIDeviceOrientationPortraitUpsideDown) return UIImageOrientationDown;
+    }
+
+    // device landscape right == interface landscape left
+    if (_lastInterfaceOrientation == UIInterfaceOrientationLandscapeRight) {
+        if (_lastDeviceOrientation == UIDeviceOrientationLandscapeRight) return UIImageOrientationLeft;
+        if (_lastDeviceOrientation == UIDeviceOrientationPortrait) return UIImageOrientationDown;
+        if (_lastDeviceOrientation == UIDeviceOrientationPortraitUpsideDown) return UIImageOrientationUp;
+    }
 
     return UIImageOrientationRight;
 }
@@ -432,24 +432,24 @@ Represents the input from the camera device
  Sets the current capture session output orientation to the device's orientation
  */
 - (void)setVideoOrientation {
-  // UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-  AVCaptureVideoOrientation videoOrientation = AVCaptureVideoOrientationPortrait;
-  // switch (orientation) {
-  //   case UIInterfaceOrientationPortrait:
-  //     videoOrientation = AVCaptureVideoOrientationPortrait;
-  //     break;
-  //   case UIInterfaceOrientationPortraitUpsideDown:
-  //     videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
-  //     break;
-  //   case UIInterfaceOrientationLandscapeLeft:
-  //     videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
-  //     break;
-  //   case UIInterfaceOrientationLandscapeRight:
-  //     videoOrientation = AVCaptureVideoOrientationLandscapeRight;
-  //     break;
-  //   default:
-  //     videoOrientation = AVCaptureVideoOrientationPortrait;
-  // }
+  UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+  AVCaptureVideoOrientation videoOrientation;
+  switch (orientation) {
+    case UIInterfaceOrientationPortrait:
+      videoOrientation = AVCaptureVideoOrientationPortrait;
+      break;
+    case UIInterfaceOrientationPortraitUpsideDown:
+      videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+      break;
+    case UIInterfaceOrientationLandscapeLeft:
+      videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
+      break;
+    case UIInterfaceOrientationLandscapeRight:
+      videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+      break;
+    default:
+      videoOrientation = AVCaptureVideoOrientationPortrait;
+  }
 
   [[[self.captureSession.outputs firstObject].connections firstObject] setVideoOrientation:videoOrientation];
 }
@@ -568,13 +568,13 @@ Represents the input from the camera device
     NSData *imageData = [AVCapturePhotoOutput JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer previewPhotoSampleBuffer:previewPhotoSampleBuffer];
 
     CIImage *intialImage = [CIImage imageWithData:imageData];
-    intialImage = [intialImage imageByApplyingOrientation:kCGImagePropertyOrientationRight];
+    intialImage = [intialImage imageByApplyingOrientation:[self getCGImageOrientationForCaptureImage]];
 
     // Lock in the final image orientation
-    UIImageOrientation imageOutputOrientation = UIImageOrientationUp;
+    UIImageOrientation imageOutputOrientation = [self getOrientationForImage];
 
     // Crop to fit screen size
-    CGSize screenSize = CGSizeMake(self.bounds.size.width, self.bounds.size.height);
+    CGSize screenSize = CGSizeMake(self.bounds.size.height, self.bounds.size.width);
     CGRect cropRect = AVMakeRectWithAspectRatioInsideRect(screenSize, intialImage.extent);
 
     intialImage = [intialImage imageByCroppingToRect:cropRect];
