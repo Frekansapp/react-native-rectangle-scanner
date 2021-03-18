@@ -173,7 +173,7 @@ After an image is captured, this fuction is called and handles cropping the imag
     CIContext *context = [CIContext contextWithOptions:nil];
     CGImageRef capturedref = [context createCGImage:capturedImage fromRect:capturedImage.extent];
     UIImage *initialImage = [UIImage imageWithCGImage:capturedref scale: 1.0 orientation:orientation];
-    [self onProcessedCapturedImage:nil initialImage: initialImage lastRectangleFeature: nil];
+      [self onProcessedCapturedImage:nil initialImage: initialImage lastRectangleFeature: nil fromBounds:nil];
     CGImageRelease(capturedref);
   }
 }

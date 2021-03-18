@@ -121,7 +121,7 @@ After capture, the image is stored and sent to the event handler
     croppedFilePath = initialFilePath;
   }
     
-    NSDictionary *dimensions = @{@"height": @(fromBounds->size.width), @"width": @(fromBounds->size.height)};
+    NSDictionary *dimensions = fromBounds ? @{@"height": @(fromBounds->size.width), @"width": @(fromBounds->size.height)} : @{};
 
   if (self.onPictureTaken) {
     self.onPictureTaken(@{
