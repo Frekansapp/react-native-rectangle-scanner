@@ -6,6 +6,8 @@ declare module 'react-native-rectangle-scanner' {
   export interface PictureCallbackProps {
     croppedImage: string,
     initialImage: string,
+    rectangleCoordinates: string,
+    dimensions: number
   }
 
   export interface DeviceSetupCallbackProps {
